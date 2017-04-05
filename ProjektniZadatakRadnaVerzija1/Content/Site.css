@@ -1,0 +1,452 @@
+﻿body
+{
+	background-image:url('bg7.jpg');
+	background-repeat:no-repeat;
+	background-position:left top;
+	color:white;
+}
+/*LOGIN FORMA*/
+.form-control {
+    border: none;
+    border-color: transparent;
+}
+.mojlog
+{
+    margin-top:40%;
+    background-color:rgba(39, 39, 47, 0.9);
+	padding:40px 70px 50px 70px;
+}
+.form-signin
+{
+	margin-top:30%;
+}
+#inputUsername,#inputPassword,#srch-term
+{
+	background-color:#434350;
+	color:white;
+    border: none;
+    outline:none;
+    height:33px;
+    transition:height 1s;
+    -webkit-transition:height 1s;
+    -moz-transition:height 1s;
+    -o-transition:height 1s;
+	border-radius:0;
+}
+.inner-addon { 
+    position: relative; 
+}
+.inner-addon .glyphicon {
+  position: absolute;
+  padding: 5px 10px 5px 10px;
+  pointer-events: none;
+}
+/* align icon */
+.left-addon .glyphicon  { left:  0;}
+.right-addon .glyphicon { right: 0;}
+/* add padding  */
+.left-addon input  { padding-left:  40px; }
+.right-addon input { padding-right: 40px; }
+.glyphicon-user,.glyphicon-lock,.glyphicon-star
+{
+	font-size:20px;
+}
+.btn
+{
+	color:white;
+}
+
+/*SREDJIVANJE FORME ZA ULOGOVANJE KORISNIKE*/
+.strpp
+{
+    background-color:rgba(39, 39, 47, 0.9);
+	padding:40px 80px 50px 80px;
+	margin-top:3%;
+}
+
+/*PROFIL DETALJI ULOGOVANOG KORISNIKA*/
+.acc-pic img
+{
+	width:60%;
+	border-radius:50%;
+}
+.acc-det
+{
+	margin-top:2%;
+	margin-left:-8%;
+}
+#linija
+{
+	border: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(200, 200, 200, 0.75), rgba(0, 0, 0, 0));
+}
+.acc-det .glyphicon
+{
+	margin-right:10px;
+	font-size:15px;
+}
+.acc-det p
+{
+	font-size:15px;
+}
+/*FORMA ZA RAD*/
+.strpp-podaci
+{
+    background-color:rgba(39, 39, 47, 0.3);
+	width:100%;
+	height:auto;
+}
+.pol
+{
+	padding-top:5px;
+	padding-bottom:7px;
+}
+.form-group
+{
+	margin-top:20px;
+}
+.kockica
+{
+    background-color:#434350;
+    height:33px;
+    color:white;
+	border-radius:0;
+}
+input{
+    transition: width 2s;
+}
+.glyphicon-pencil
+{
+	font-size:12px;
+	padding:8px;
+}
+.test
+{
+	position:relative;
+}
+/* SIDEBAR */
+#sidebar-wrapper {
+    z-index: 1;
+    width: 40px;
+    height: 100%;
+    overflow: hidden;
+    background-color:rgba(39, 39, 47, 0.9);;
+	position:absolute;
+	border-right:1px solid grey;
+	-webkit-transition: width 0.5s; /* For Safari 3.1 to 6.0 */
+    -moz-transition: width 0.5s;
+    -o-transition: width 0.5s;
+    transition: width 0.5s;
+}
+#page-content-wrapper {
+    width: 100%;
+	padding:0 0 30px 55px;
+	position:relative;
+	transition:0.5s;
+	
+}
+
+/* MENJA SIRINU SIDEBAR-A */
+#wrapper.menuDisplayed #sidebar-wrapper {
+    width: 250px;
+}
+
+/* MENJA PADDING FORME ZA UNOS PODATAKA */
+#wrapper.menuDisplayed #page-content-wrapper {
+    padding-left:250px;
+	transition:0.5s;
+}
+.glyphicon-menu-hamburger
+{
+	font-size:25px;
+	padding:7px;
+    color:#fff;
+	color:rgba(255, 255, 255, 0.6);
+	text-decoration:none;
+	border:none;
+	outline:none;
+}
+
+.glyphicon-menu-plus
+{
+	font-size:25px;
+	padding:7px;
+    color:#fff;
+	color:rgba(255, 255, 255, 0.6);
+	text-decoration:none;
+	border:none;
+	outline:none;
+}
+
+.glyphicon-menu-hamburger:hover
+{
+	text-decoration:none;
+	color:white;
+}
+.glyphicon-menu-hamburger:focus
+{
+	text-decoration:none;
+	color:white;
+}
+a:focus, a:hover
+{
+	text-decoration:none;
+}
+
+.pocetnaSlova
+{
+	font-family: Arial, Georgia, Serif;
+	font-style:normal;
+	font-size:16px;
+	font-weight:700;
+	height:17.5px;
+	padding:0 13px;
+    color:#fff;
+	color:rgba(255, 255, 255, 0.7);
+}
+
+#linijaHamburg
+{
+	margin:0 0 5px 0;
+}
+
+
+#polID
+ {
+     padding:5.5px;
+ }
+
+.bonusForma .kockica{
+    padding: 5px;
+    margin: 10px 0;
+    color:white;
+}
+
+.checkiranje
+{
+    padding:15px 0;
+}
+
+.bonusForma::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #000;
+}
+.bonusForma:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #000;
+   opacity:  1;
+}
+.bonusForma::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #000;
+   opacity:  1;
+}
+.bonusForma:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #000;
+}
+#slika
+{
+    
+    display:block;
+    width:54%;
+    margin-top:6%;
+    margin-bottom:5%;
+    margin-left:auto;
+    margin-right:auto;
+}
+.listaKorisnika
+{
+    padding:10px;
+}
+.dugmici .btn
+{
+    margin:20px;
+}
+#linkKorisnik
+{
+    display:inline-block;
+    padding:0 10px;
+    width:210px;
+}
+.srednjaForma label
+{
+    padding-left:15px;
+}
+textarea
+{
+    border:none;
+    background-color:#434350;
+    resize: none;
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    cursor: inherit;
+    display: block;
+}
+.srcIcon
+{
+    font-size:20px;
+    padding:3px 10px;
+    color:white;
+}
+
+.srcDiv
+{
+    display:inline-flex;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+.plusDiv
+{
+    display:inline-flex;
+    padding-bottom:10px;
+}
+.srcDiv .form-control
+{
+    width:80%;
+}
+.plusIcon
+{
+    font-size:20px;
+    padding:7px 10px;
+    color:white;
+}
+.plusDiv a
+{
+    display:inline-block;
+    width:210px;
+}
+.myUL
+{
+    list-style-type:none;
+    margin:0;
+    padding:0px;
+}
+.myUL li
+{
+    padding:10px 5px;
+}
+
+#myUL li a {
+    display:inline-block; /* Make it into a block element to fill the whole list */
+}
+
+/*RESPONSIVE - Kompatibilnost za mobilne uredjaje*/
+
+@media (max-width: 1200px)
+{
+.form-signin
+{
+	margin-top:20%;
+}
+.mojlog
+{
+	padding:40px 60px 50px 60px;
+}
+.acc-det
+{
+	margin-top:1%;
+}
+}
+
+@media (max-width: 992px)
+{
+.form-signin
+{
+	margin-top:5%;
+}
+.acc-pic img
+{
+	width:100%;
+	border-radius:50%;
+}
+
+.acc-det
+{
+	margin-top:2%;
+	margin-left:0;
+	
+}
+#wrapper
+{
+	margin-top:35%;
+}
+}
+
+@media (max-width: 768px)
+{
+    .strpp
+{
+    margin-left:-50px;
+    margin-right:-50px;
+    margin-top:-3%;
+}
+.acc-pic{
+	width:50%;
+	margin:auto;
+	text-align:center;
+}
+.acc-det{
+	text-align:center;
+}
+
+.strpp-podaci
+{
+		width:120%;
+}
+#wrapper
+{
+	margin-top:5%;
+}
+
+}
+
+@media (max-width: 500px)
+{
+.strpp
+{
+    margin-left:-80px;
+    margin-right:-80px;
+}
+.form-signin
+{
+	margin-top:5%;
+}
+.mojlog
+{
+	padding:40px 20px 50px 20px;
+}
+}
+
+@media (max-width: 468px)
+{
+.strpp
+{
+    padding-left:-60px !important;
+    padding-right:-60px !important;
+}
+.strpp-podaci
+{
+		width:160%;
+}
+.acc-pic{
+	width:60%;
+	margin:auto;
+	text-align:center;
+}
+.navbar-form-control
+{
+	padding:10px 0;
+}
+}

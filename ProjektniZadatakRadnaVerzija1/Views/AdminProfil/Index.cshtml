@@ -1,0 +1,1000 @@
+﻿@using ProjektniZadatakRadnaVerzija1.Models
+
+@{
+    ViewBag.Title = "PocetnaAdmin";
+
+    Korisnik korisnik = new Korisnik();
+    korisnik = (Korisnik)Session["korisnik"];
+    Korisnik korisnikUlogovan = (Korisnik)Session["korisnik"];
+
+
+    string porukaKorisnickoIme = Convert.ToString(Session["porukaKorisnickoIme"]);
+    string imeSlike = Path.GetFileName(korisnik.Fotografija);
+    string imeSlikeUlogovan = Path.GetFileName(korisnikUlogovan.Fotografija);
+
+    List<PravoPristupa> listaPravaPristupa = PravoPristupa.VratiSvaPravaPristupa();
+
+
+    int brojacKorisnika = 1;
+    PravoPristupa pravoPristupaDet = PravoPristupa.VratiPravoPristupa(korisnik.SifraPravaPristupa);
+    List<Korisnik> listaKorisnika = Korisnik.VratiSveKorisnike(); ;
+
+    using (Html.BeginForm("UnosKorisnikaUBazu", "UnosKorisnika", FormMethod.Post, new { enctype = "multipart/form-data" }) )
+    {
+        
+        try
+        {
+        <div class="container" onblur="ugasiKorisnickoIme()">
+            <div class="col-md-12 strpp">
+                <div class="col-md-12 acc-info">
+                    @if (imeSlikeUlogovan != null)
+                    {
+                        <div class="col-sm-3 acc-pic"><img src="~/image/@imeSlikeUlogovan"></div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-3 acc-pic"><img src="~/image/def4.png"></div>
+                    }
+                    <div class="col-sm-4 acc-det">
+                        <p><i class="glyphicon glyphicon-user"></i>@korisnik.Ime @korisnik.Prezime<span role="button" class="glyphicon glyphicon-pencil btn-lg" onclick="yourFunction()">@Html.ActionLink("edit", "Index", "AdminProfil")</span><p>
+                        <p><i class="glyphicon glyphicon-star"></i>@pravoPristupaDet.NazivPristupa</p>
+                        <p><i class="glyphicon glyphicon-log-out"></i>@Html.ActionLink("Odjavi se", "Index", "Izlogovanje")</p>
+                    </div>
+                </div>
+                <div class="col-sm-12"><hr id="linija"></div>
+                <div id="wrapper" class="col-md-12">
+                    <!-- Page content -->
+                    <div id="sidebar-wrapper">
+                        <i><a href="#" class="glyphicon glyphicon-menu-hamburger" id="menu-toggle"></a></i>
+                        <hr id="linijaHamburg">
+                        <div class="srcDiv"><a href="" id="src-click"><i class="glyphicon glyphicon-search srcIcon"></i></a><input type="text" class="form-control kockica" id="myInput" onkeyup="myFunction()" placeholder="Pretražite korisnike"></div>
+                        <div class="plusDiv"><a href="/Logovanje/PocetnaAdmin"><i class="glyphicon glyphicon glyphicon-plus plusIcon"></i>Dodaj korisnika</a></div>
+                        <hr id="linijaHamburg">
+                        <ul id="myUL" class="myUL">
+                            @foreach (Korisnik k in listaKorisnika)
+                            {
+                                <li><a id="linkKorisnik" href="/ProfilKorisnika/Index?id=@k.Id">@brojacKorisnika &nbsp &nbsp @k.Ime &nbsp @k.Prezime</a></li>
+                                brojacKorisnika++;
+                            }
+                        </ul>
+                    </div>
+                    <div id="page-content-wrapper" class="col-md-12 strpp-podaci">
+                        <div class="col-md-12 gornjaForma">
+                            <div class="col-md-6 gornjaLevaForma">
+                                <div class="form-group">
+                                    @if (@korisnik.Id != 0)
+                                    {
+                                        <input type="text" class="hidden" name="sifraKorisnika" value="@korisnik.Id" />
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="hidden" name="sifraKorisnika" value="0" />
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    @if (@korisnik.Id != 0)
+                                    {
+                                        if (!String.IsNullOrEmpty(korisnik.Fotografija))
+                                        {
+                                            <img id="slika" src="~/image/@imeSlike">
+                                            <p>Promeni sliku: <input class="btn" type="file" id="izborslike" name="slika" onchange="validacijaSlike()"> </p>
+                                        }
+                                        else
+                                        {
+                                            <img id="slika" src="~/image/def4.png">
+                                            <p>Promeni sliku: <input class="btn btn-" type="file" id="izborslike" name="slika" onchange="validacijaSlike()"> </p>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <img id="slika" src="~/image/def4.png">
+                                        <p>Dodaj sliku: <input class="btn" type="file" id="izborslike" name="slika" onchange="validacijaSlike()"> </p>
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    <label>Korisnicko Ime<a style="color:red;">*</a></label>
+                                    <input class="form-control kockica" type="text" value="@if (!String.IsNullOrEmpty(@korisnik.KorisnickoIme)){ @korisnik.KorisnickoIme}" name="korIme" id="korisnickoime"onkeyup="validacijaKorisnickogImena()" maxlength="20" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Lozinka<a style="color:red;">*</a></label>
+                                    <input class="form-control kockica" type="password" value="@if (!String.IsNullOrEmpty(@korisnik.Lozinka)){ @korisnik.Lozinka}" name="lozinka" id="sifra" onkeyup="validacijaSifre()" maxlength="20" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Pravo Pristupa<a style="color:red;">*</a></label>
+                                    @{
+                                        if (korisnik.Id != 0)
+                                        {
+                                            PravoPristupa pravoPristupa = PravoPristupa.VratiPravoPristupa(korisnik.SifraPravaPristupa);
+                                            <select class="form-control kockica pravoPristupaStil" name="pravoPristupa"
+                                                    id="pravapristupa" onchange="validacijaPravaPristupa()">
+                                                <option value="@pravoPristupa.SifraPristupa">@pravoPristupa.NazivPristupa</option>
+                                                @foreach (PravoPristupa p in listaPravaPristupa)
+                                                {
+                                                    <option value="@p.SifraPristupa">@p.NazivPristupa</option>
+                                                }
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select class="form-control kockica pravoPristupaStil" name="pravoPristupa"
+                                                    id="pravapristupa" onchange="validacijaPravaPristupa()">
+                                                <option value="0" >Izaberite pravo pristupa</option>
+                                                @foreach (PravoPristupa p in listaPravaPristupa)
+                                                {
+                                                    <option value="@p.SifraPristupa">@p.NazivPristupa</option>
+                                                }
+                                            </select>
+                                        }
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    <label>Pol<a style="color:red;">*</a></label>
+                                    <div id="polovipozadina">
+                                        @{
+                                            List<Pol> listaPolova = Pol.VratiPolove();
+                                            if (korisnik.SifraPola != 0)
+                                            {
+                                                foreach (Pol p in listaPolova)
+                                                {
+                                                    if (p.SifraPola == korisnik.SifraPola)
+                                                    {
+                                                        <input type="radio" checked="checked" name="pol" id="pol" value="@p.SifraPola"  onclick="validacijaPola()">@p.NazivPola
+                                                    }
+                                                    if (korisnik.SifraPola != p.SifraPola)
+                                                    {
+                                                        <input type="radio" name="pol" value="@p.SifraPola" id="pol"  onclick="validacijaPola()">@p.NazivPola
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                foreach (Pol p in listaPolova)
+                                                {
+                                                    <input type="radio" name="pol" value="@p.SifraPola" id="pol" onclick="validacijaPola()">@p.NazivPola
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 gornjaDesnaForma">
+                                <div class="form-group">
+                                    <label>Ime<a style="color:red;">*</a></label>
+                                    <input id="imeID" class="form-control kockica" type="text"  maxlength="15" value="@if (!String.IsNullOrEmpty(@korisnik.Ime)){ @korisnik.Ime}"
+                                            name="ime" id="ime" onkeyup="validacijaIme()" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Prezime<a style="color:red;">*</a></label>
+                                    <input class="form-control kockica" type="text" maxlength="20" value="@if (!String.IsNullOrEmpty(@korisnik.Prezime)){ @korisnik.Prezime}"
+                                           name="prezime" id="prezime" onkeyup="validacijaPrezime()"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>JMBG<a style="color:red;">*</a></label>
+                                    <input class="form-control kockica" type="text" value="@if (!String.IsNullOrEmpty(@korisnik.Jmbg)){@korisnik.Jmbg}" 
+                                           name="jmbg" id="jmbg" onkeyup="proveraJMBG()" maxlength="13" autocomplete="off"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Broj Licne Karte<a style="color:red;">*</a></label>
+                                    <input class="form-control kockica" type="text" value="@if (!String.IsNullOrEmpty(@korisnik.BrojLicneKarte)){@korisnik.BrojLicneKarte}" 
+                                           name="brojLicneKarte" id="brojlicnekarte" onkeyup="validacijaBrojLicneKarte()" maxlength="9"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ime Roditelja</label>
+                                    <input class="form-control kockica" type="text" maxlength="15" value="@if (!String.IsNullOrEmpty(@korisnik.ImeRoditelja)){@korisnik.ImeRoditelja}"
+                                           name="imeRoditelja" id="imeroditelja" onkeyup="validacijaImeRoditelja()"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Datum Rodjenja</label>
+                                    @{
+                                        if (korisnik.DatumRodjenja != null)
+                                        {
+                                            DateTime datum = (DateTime)korisnik.DatumRodjenja;
+                                            <input class="form-control kockica" type="date" value="@datum.Date.ToString("yyyy-MM-dd")" id="datumrodjenja" name="datumRodjenja" onclick="validacijaDatum()" />
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control kockica" type="date" value="2000-01-01" id="datumrodjenja" name="datumRodjenja" onclick="validacijaDatum()" />
+                                        }
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    <label>Mesto Rodjenja</label>
+                                    <select class="form-control kockica pravoPristupaStil" name="mestoRodjenja"
+                                            id="mestorodjenja" onchange="validacijaMestoOpstinaRodjenja()">
+                                        @{
+                                            List<Grad> listaGradovaRodjenja = Grad.VratiSveGradove();
+                                            if (korisnik.SifraMestaRodjenja != 0)
+                                            {
+                                                Grad mestoRodjenja = Grad.VratiGrad(korisnik.SifraMestaRodjenja);
+                                                <option value="@korisnik.SifraMestaRodjenja">@mestoRodjenja.NazivGrada</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="0">Izaberite grad rodjenja</option>
+                                            }
+                                            foreach (Grad g in listaGradovaRodjenja)
+                                            {
+                                                <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Opstina Rodjenja</label>
+                                    <select class="form-control kockica pravoPristupaStil" name="opstinaRodjenja"
+                                            id="opstinarodjenja" onchange="validacijaMestoOpstinaRodjenja()">
+                                        @{
+                                            if (korisnik.SifraOpstineRodjenja != 0 && korisnik.SifraMestaRodjenja != 0)
+                                            {
+                                                Opstina opstinaRodjenja = Opstina.VratiOpstinu(korisnik.SifraMestaRodjenja, korisnik.SifraOpstineRodjenja);
+                                                <option value="@korisnik.SifraOpstineRodjenja">@opstinaRodjenja.NazivOpstine</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="0">Izaberite opstinu rodjenja</option>
+                                            }
+                                            List<Grad> listaGradovaOpstinaRodjenja = Grad.VratiSveGradove();
+                                            foreach (Grad g in listaGradovaOpstinaRodjenja)
+                                            {
+                                                List<Opstina> listaOpstina = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                <optgroup label="@g.NazivGrada">
+                                                    @foreach (Opstina o in listaOpstina)
+                                                    {
+                                                        <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                    }
+                                                </optgroup>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 srednjaForma">
+                            <div class="form-group">
+                                <label>Adresa Kuca</label>
+                                <div>
+                                    @{
+                                        List<Grad> listaGradovaAdresa = Grad.VratiSveGradove();
+                                        if (korisnik.Id != 0)
+                                        {
+                                            Adresa adresaKuca = Adresa.VratiAdresuKuca(korisnik.Id);
+                                            if (adresaKuca != null)
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaKuca" value="@adresaKuca.NazivAdrese" 
+                                                           id="adresa1naziv" onkeyup="slovarazmak(adresa1naziv)" maxlength="50"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdreseKuca" value="@adresaKuca.SifraAdrese" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdreseKuca" value="@adresaKuca.Broj" 
+                                                           id="adresa1broj" onkeyup="slovabrojevi(adresa1broj)" maxlength="5"/>
+                                                </div>
+                                                Grad gradAdresaKuca = Grad.VratiGrad(adresaKuca.SifraGrada);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaKucaGrad"
+                                                            id="adresa1grad" onchange="validacijaAdresaRange1()">
+                                                        <option value="@gradAdresaKuca.SifraGrada">@gradAdresaKuca.NazivGrada</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                Opstina opstinaAdresaKuca = Opstina.VratiOpstinu(adresaKuca.SifraGrada, adresaKuca.SifraOpstine);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaKucaOpstina"
+                                                            id="adresa1opstina" onchange="validacijaAdresaRange1()">
+                                                        <option value="@opstinaAdresaKuca.SifraOpstine">@opstinaAdresaKuca.NazivOpstine</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaKuca = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaKuca)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaKuca" 
+                                                           id="adresa1naziv" onkeyup="slovarazmak(adresa1naziv)" maxlength="50"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdreseKuca" value="0" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdreseKuca" 
+                                                           id="adresa1broj" onkeyup="slovabrojevi(adresa1broj)" maxlength="5"/>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaKucaGrad"
+                                                            id="adresa1grad" onchange="validacijaAdresaRange1()">
+                                                        <option value="0">Izaberite grad</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaKucaOpstina"
+                                                            id="adresa1opstina" onchange="validacijaAdresaRange1()">
+                                                        <option value="0">Izaberite opstinu</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaPosao = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaPosao)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-4">
+                                                <input class="form-control kockica" type="text" name="adresaKuca"
+                                                       id="adresa1naziv" onkeyup="slovarazmak(adresa1naziv)" maxlength="50" />
+                                            </div>
+                                            <input type="text" class="hidden" name="sifraAdreseKuca" value="0" />
+                                            <div class="col-md-2">
+                                                <input class="form-control kockica" type="text" name="brojAdreseKuca" 
+                                                       id="adresa1broj" onkeyup="slovabrojevi(adresa1broj)" maxlength="5"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaKucaGrad"
+                                                        id="adresa1grad" onchange="validacijaAdresaRange1()">
+                                                    <option value="0">Izaberite grad</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaKucaOpstina"
+                                                        id="adresa1opstina" onchange="validacijaAdresaRange1()">
+                                                    <option value="0">Izaberite opstinu</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        List<Opstina> listaOpstinaPosao = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                        <optgroup label="@g.NazivGrada">
+                                                            @foreach (Opstina o in listaOpstinaPosao)
+                                                            {
+                                                                <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                            }
+                                                        </optgroup>
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <label>Adresa Posao</label>
+                                <div>
+                                    @{
+                                        if (korisnik.Id != 0)
+                                        {
+                                            Adresa adresaPosao = Adresa.VratiAdresuPosao(korisnik.Id);
+                                            if (adresaPosao != null)
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaPosao" value="@adresaPosao.NazivAdrese" 
+                                                           id="adresa2naziv" onkeyup="slovarazmak(adresa2naziv)"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdresePosao" value="@adresaPosao.SifraAdrese" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdresePosao" value="@adresaPosao.Broj" 
+                                                           id="adresa2broj" onkeyup="slovabrojevi(adresa2broj)" maxlength="5"/>
+                                                </div>
+                                                Grad gradAdresaPosao = Grad.VratiGrad(adresaPosao.SifraGrada);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaPosaoGrad"
+                                                            id="adresa2grad" onchange="validacijaAdresaRange2()">
+                                                        <option value="@gradAdresaPosao.SifraGrada">@gradAdresaPosao.NazivGrada</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                Opstina opstinaAdresaPosao = Opstina.VratiOpstinu(adresaPosao.SifraGrada, adresaPosao.SifraOpstine);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaPosaoOpstina"
+                                                            id="adresa2opstina" onchange="validacijaAdresaRange2()">
+                                                        <option value="@opstinaAdresaPosao.SifraOpstine">@opstinaAdresaPosao.NazivOpstine</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaPosao = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaPosao)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaPosao" 
+                                                           id="adresa2naziv" onkeyup="slovarazmak(adresa2naziv)"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdresePosao" value="0" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdresePosao" 
+                                                           id="adresa2broj" onkeyup="slovabrojevi(adresa2broj)" maxlength="5"/>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaPosaoGrad"
+                                                            id="adresa2grad" onchange="validacijaAdresaRange2()">
+                                                        <option value="0">Izaberite grad</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaPosaoOpstina"
+                                                            id="adresa2opstina" onchange="validacijaAdresaRange2()">
+                                                        <option value="0">Izaberite opstinu</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaPosao = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaPosao)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-4">
+                                                <input class="form-control kockica" type="text" name="adresaPosao" 
+                                                       id="adresa2naziv" onkeyup="slovarazmak(adresa2naziv)"/>
+                                            </div>
+                                            <input type="text" class="hidden" name="sifraAdresePosao" value="0" 
+                                                   id="adresa2broj" onkeyup="slovabrojevi(adresa2broj)" maxlength="5"/>
+                                            <div class="col-md-2">
+                                                <input class="form-control kockica" type="text" name="brojAdresePosao" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaPosaoGrad"
+                                                        id="adresa2grad" onchange="validacijaAdresaRange2()">
+                                                    <option value="0">Izaberite grad</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaPosaoOpstina"
+                                                        id="adresa2opstina" onchange="validacijaAdresaRange2()">
+                                                    <option value="0">Izaberite opstinu</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        List<Opstina> listaOpstinaPosao = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                        <optgroup label="@g.NazivGrada">
+                                                            @foreach (Opstina o in listaOpstinaPosao)
+                                                            {
+                                                                <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                            }
+                                                        </optgroup>
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <label>Adresa Licna Karta</label>
+                                <div>
+                                    @{
+                                        if (korisnik.Id != 0)
+                                        {
+                                            Adresa adresaLicnaKarta = Adresa.VratiAdresuLicnaKarta(korisnik.Id);
+                                            if (adresaLicnaKarta != null)
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaLicnaKarta" value="@adresaLicnaKarta.NazivAdrese" 
+                                                           id="adresa3naziv" onkeyup="slovarazmak(adresa3naziv)" maxlength="50"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdreseLicnaKarta" value="@adresaLicnaKarta.SifraAdrese" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdreseLicnaKarta" value="@adresaLicnaKarta.Broj" 
+                                                           id="adresa3broj" onkeyup="slovabrojevi(adresa3broj)" maxlength="5"/>
+                                                </div>
+                                                Grad gradAdresaLicnaKarta = Grad.VratiGrad(adresaLicnaKarta.SifraGrada);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaGrad"
+                                                            id="adresa3grad" onchange="validacijaAdresaRange3()">
+                                                        <option value="@gradAdresaLicnaKarta.SifraGrada">@gradAdresaLicnaKarta.NazivGrada</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                Opstina opstinaAdresaLicnaKarta = Opstina.VratiOpstinu(adresaLicnaKarta.SifraGrada, adresaLicnaKarta.SifraOpstine);
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaOpstina"
+                                                            id="adresa3opstina" onchange="validacijaAdresaRange3()">
+                                                        <option value="@opstinaAdresaLicnaKarta.SifraOpstine">@opstinaAdresaLicnaKarta.NazivOpstine</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaLicnaKarta = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaLicnaKarta)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <input class="form-control kockica" type="text" name="adresaLicnaKarta" 
+                                                           id="adresa3naziv" onkeyup="slovarazmak(adresa3naziv)" maxlength="50"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraAdreseLicnaKarta" value="0" />
+                                                <div class="col-md-2">
+                                                    <input class="form-control kockica" type="text" name="brojAdreseLicnaKarta" 
+                                                           id="adresa3broj" onkeyup="slovabrojevi(adresa3broj)" maxlength="5"/>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaGrad"
+                                                            id="adresa3grad" onchange="validacijaAdresaRange3()">
+                                                        <option value="0">Izaberite grad</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaOpstina"
+                                                            id="adresa3opstina" onchange="validacijaAdresaRange3()">
+                                                        <option value="0">Izaberite opstinu</option>
+                                                        @foreach (Grad g in listaGradovaAdresa)
+                                                        {
+                                                            List<Opstina> listaOpstinaLicnaKarta = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                            <optgroup label="@g.NazivGrada">
+                                                                @foreach (Opstina o in listaOpstinaLicnaKarta)
+                                                                {
+                                                                    <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-4">
+                                                <input class="form-control kockica" type="text" name="adresaLicnaKarta" 
+                                                       id="adresa3naziv" onkeyup="slovarazmak(adresa3naziv)" maxlength="50"/>
+                                            </div>
+                                            <input type="text" class="hidden" name="sifraAdreseLicnaKarta" value="0" />
+                                            <div class="col-md-2">
+                                                <input class="form-control kockica" type="text" name="brojAdreseLicnaKarta" 
+                                                       id="adresa3broj" onkeyup="slovabrojevi(adresa3broj)" maxlength="5"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaGrad"
+                                                        id="adresa3grad" onchange="validacijaAdresaRange3()">
+                                                    <option value="0">Izaberite grad</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        <option value="@g.SifraGrada">@g.NazivGrada</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control kockica pravoPristupaStil" name="adresaLicnaKartaOpstina"
+                                                        id="adresa3opstina" onchange="validacijaAdresaRange3()">
+                                                    <option value="0">Izaberite opstinu</option>
+                                                    @foreach (Grad g in listaGradovaAdresa)
+                                                    {
+                                                        List<Opstina> listaOpstinaLicnaKarta = Opstina.VratiSveOpstine(g.SifraGrada);
+                                                        <optgroup label="@g.NazivGrada">
+                                                            @foreach (Opstina o in listaOpstinaLicnaKarta)
+                                                            {
+                                                                <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                                            }
+                                                        </optgroup>
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 donjaForma">
+                            <div class="col-md-6 donjaLevaForma">
+                                <div class="form-group">
+                                    <label for="privatnaEmailAdresa">Privatna Email Adresa</label>
+                                    <div>
+                                        @{
+                                            if (korisnik.Id != 0)
+                                            {
+                                                EmailAdresa privatnaEmailAdresa = EmailAdresa.VratiPrivatnuEmailAdresu(korisnik.Id);
+                                                if (privatnaEmailAdresa != null)
+                                                {
+                                                    <input class="form-control kockica" type="text" name="privatnaEmailAdresa" value="@privatnaEmailAdresa.Email"
+                                                           id="mail1" onkeyup="validacijaEmail1()">
+                                                    <input type="text" class="hidden" name="sifraPrivatnaEmailAdrese" value="@privatnaEmailAdresa.SifraEmail">
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-control kockica" type="text" name="privatnaEmailAdresa"
+                                                           id="mail1" onkeyup="validacijaEmail1()">
+                                                    <input type="text" class="hidden" name="sifraPrivatnaEmailAdrese" value="0">
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control kockica" type="text" name="privatnaEmailAdresa"
+                                                       id="mail1" onkeyup="validacijaEmail1()">
+                                                <input type="text" class="hidden" name="sifraPrivatnaEmailAdrese" value="0">
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="poslovnaEmailAdresa">Poslovna Email Adresa</label>
+                                    <div>
+                                        @{
+                                            if (korisnik.Id != 0)
+                                            {
+                                                EmailAdresa poslovnaEmailAdresa = EmailAdresa.VratiPosaoEmailAdresu(korisnik.Id);
+                                                if (poslovnaEmailAdresa != null)
+                                                {
+                                                    <input class="form-control kockica" type="text" name="poslovnaEmailAdresa" value="@poslovnaEmailAdresa.Email"
+                                                           id="mail2" onkeyup="validacijaEmail2()">
+                                                    <input type="text" class="hidden" name="sifraPoslovneEmailAdrese" value="@poslovnaEmailAdresa.SifraEmail">
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-control kockica" type="text" name="poslovnaEmailAdresa"
+                                                           id="mail2" onkeyup="validacijaEmail2()">
+                                                    <input type="text" class="hidden" name="sifraPoslovneEmailAdrese" value="0">
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control kockica" type="text" name="poslovnaEmailAdresa"
+                                                       id="mail2" onkeyup="validacijaEmail2()">
+                                                <input type="text" class="hidden" name="sifraPoslovneEmailAdrese" value="0">
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="privatniMobilni">Privatni Mobilni</label>
+                                    <div>
+                                        @{
+                                            List<LokalMobilni> listaLokalaMobilnih = LokalMobilni.VratiSveMobilneLokale();
+                                            if (korisnik.Id != 0)
+                                            {
+                                                MobilniTelefon privatniMobilniTelefon = MobilniTelefon.VratiPrivatniMobilniTelefon(korisnik.Id);
+                                                if (privatniMobilniTelefon != null)
+                                                {
+                                                    LokalMobilni privatniLokalMobilni = LokalMobilni.VratiLokalMobilni(privatniMobilniTelefon.SifraLokala);
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="privatniLokalMobilni"
+                                                                id="mobilni1pozivni" onchange="validacijaMobilni1()">
+                                                            <option value="@privatniLokalMobilni.SifraLokala">@privatniLokalMobilni.Lokal</option>
+                                                            @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                            {
+                                                                <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="privatniMobilni" value="@privatniMobilniTelefon.BrojTelefona" 
+                                                               id="mobilni1broj" onkeyup="validacijaMobilni1()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraPrivatnogMobilnog" value="@privatniMobilniTelefon.SifraTelefona" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="privatniLokalMobilni"
+                                                                id="mobilni1pozivni" onchange="validacijaMobilni1()">
+                                                            <option value="0">Izaberi lokal</option>
+                                                            @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                            {
+                                                                <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="privatniMobilni" 
+                                                               id="mobilni1broj" onkeyup="validacijaMobilni1()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraPrivatnogMobilnog" value="0" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <select class="form-control kockica pravoPristupaStil" name="privatniLokalMobilni"
+                                                            id="mobilni1pozivni" onchange="validacijaMobilni1()">
+                                                        <option value="0">Izaberi lokal</option>
+                                                        @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                        {
+                                                            <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input class="form-control kockica" type="text" name="privatniMobilni" 
+                                                           id="mobilni1broj" onkeyup="validacijaMobilni1()" maxlength="7"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraPrivatnogMobilnog" value="0" />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sluzbeniMobilni">Sluzbeni Mobilni</label>
+                                    <div>
+                                        @{
+                                            if (korisnik.Id != 0)
+                                            {
+                                                MobilniTelefon sluzbeniMobilniTelefon = MobilniTelefon.VratiSluzbeniMobilniTelefon(korisnik.Id);
+                                                if (sluzbeniMobilniTelefon != null)
+                                                {
+                                                    LokalMobilni sluzbeniLokalMobilni = LokalMobilni.VratiLokalMobilni(sluzbeniMobilniTelefon.SifraLokala);
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="sluzbeniLokalMobilni"
+                                                                id="mobilni2pozivni" onchange="validacijaMobilni2()">
+                                                            <option value="@sluzbeniLokalMobilni.SifraLokala">@sluzbeniLokalMobilni.Lokal</option>
+                                                            @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                            {
+                                                                <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="sluzbeniMobilni" value="@sluzbeniMobilniTelefon.BrojTelefona" 
+                                                               id="mobilni2broj" onkeyup="validacijaMobilni2()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraSluzbenogMobilnog" value="@sluzbeniMobilniTelefon.SifraTelefona" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="sluzbeniLokalMobilni"
+                                                                id="mobilni2pozivni" onchange="validacijaMobilni2()">
+                                                            <option value="0">Izaberi lokal</option>
+                                                            @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                            {
+                                                                <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="sluzbeniMobilni" 
+                                                               id="mobilni2broj" onkeyup="validacijaMobilni2()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraSluzbenogMobilnog" value="0" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <select class="form-control kockica pravoPristupaStil" name="sluzbeniLokalMobilni"
+                                                            id="mobilni2pozivni" onchange="validacijaMobilni2()">
+                                                        <option value="0">Izaberi lokal</option>
+                                                        @foreach (LokalMobilni lm in listaLokalaMobilnih)
+                                                        {
+                                                            <option value="@lm.SifraLokala">@lm.Lokal</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input class="form-control kockica" type="text" name="sluzbeniMobilni" 
+                                                           id="mobilni2broj" onkeyup="validacijaMobilni2()" maxlength="7"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraSluzbenogMobilnog" value="0" />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="posaoLokalFiksni">Fiksni Na Poslu</label>
+                                    <div>
+                                        @{
+                                            List<LokalFiksni> listaLokalaFiksnih = LokalFiksni.VratiSveFiksneLokale();
+                                            if (korisnik.Id != 0)
+                                            {
+                                                FiksniTelefon posaoFiksniTelefon = FiksniTelefon.VratiPosaoFiksniTelefon(korisnik.Id);
+                                                if (posaoFiksniTelefon != null)
+                                                {
+                                                    LokalFiksni posaoLokalFiksni = LokalFiksni.VratiLokalFiksni(posaoFiksniTelefon.SifraLokala);
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="posaoLokalFiksni"
+                                                                id="fiksni1pozivni" onchange="validacijaFiksni1()">
+                                                            <option value="@posaoLokalFiksni.SifraLokala">@posaoLokalFiksni.Lokal</option>
+                                                            @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                            {
+                                                                <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="posaoFiksni" value="@posaoFiksniTelefon.BrojTelefona" 
+                                                               id="fiksni1broj" onkeyup="validacijaFiksni1()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraPosaoFiksni" value="@posaoFiksniTelefon.SifraTelefona" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="posaoLokalFiksni"
+                                                                id="fiksni1pozivni" onchange="validacijaFiksni1()">
+                                                            <option value="0">Izaberi lokal</option>
+                                                            @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                            {
+                                                                <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="posaoFiksni" 
+                                                               id="fiksni1broj" onkeyup="validacijaFiksni1()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraPosaoFiksni" value="0" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <select class="form-control kockica pravoPristupaStil" name="posaoLokalFiksni"
+                                                            id="fiksni1pozivni" onchange="validacijaFiksni1()">
+                                                        <option value="0">Izaberi lokal</option>
+                                                        @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                        {
+                                                            <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input class="form-control kockica" type="text" name="posaoFiksni" 
+                                                           id="fiksni1broj" onkeyup="validacijaFiksni1()" maxlength="7"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraPosaoFiksni" value="0" />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="kucaFiksniTelefon">Fiksni Kod Kuce</label>
+                                    <div>
+                                        @{
+                                            if (korisnik.Id != 0)
+                                            {
+                                                FiksniTelefon kucaFiksniTelefon = FiksniTelefon.VratiKucaFiksniTelefon(korisnik.Id);
+                                                if (kucaFiksniTelefon != null)
+                                                {
+                                                    LokalFiksni kucaLokalFiksni = LokalFiksni.VratiLokalFiksni(kucaFiksniTelefon.SifraLokala);
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="kucaLokalFiksni"
+                                                                id="fiksni2pozivni"  onchange="validacijaFiksni2()">
+                                                            <option value="@kucaLokalFiksni.SifraLokala">@kucaLokalFiksni.Lokal</option>
+                                                            @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                            {
+                                                                <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="kucaFiksni" value="@kucaFiksniTelefon.BrojTelefona" 
+                                                               id="fiksni2broj" onkeyup="validacijaFiksni2()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraKucaFiksni" value="@kucaFiksniTelefon.SifraTelefona" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-4">
+                                                        <select class="form-control kockica pravoPristupaStil" name="kucaLokalFiksni"
+                                                                id="fiksni2pozivni"  onchange="validacijaFiksni2()">
+                                                            <option value="0">Izaberi lokal</option>
+                                                            @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                            {
+                                                                <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input class="form-control kockica" type="text" name="kucaFiksni" 
+                                                               id="fiksni2broj" onkeyup="validacijaFiksni2()" maxlength="7"/>
+                                                    </div>
+                                                    <input type="text" class="hidden" name="sifraKucaFiksni" value="0" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-4">
+                                                    <select class="form-control kockica pravoPristupaStil" name="kucaLokalFiksni"
+                                                            id="fiksni2pozivni"  onchange="validacijaFiksni2()">
+                                                        <option value="0">Izaberi lokal</option>
+                                                        @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                                                        {
+                                                            <option value="@lf.SifraLokala">@lf.Lokal</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input class="form-control kockica" type="text" name="kucaFiksni" 
+                                                           id="fiksni2broj" onkeyup="validacijaFiksni2()" maxlength="7"/>
+                                                </div>
+                                                <input type="text" class="hidden" name="sifraKucaFiksni" value="0" />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 donjaDesnaForma">
+                            <div class="form-group">
+                                <label for="beleska">Beleska</label>
+                                <div>
+                                    <textarea name="beleska" rows="10" id="beleska" maxlength="500" onkeyup="brojacBeleska()" class="form-control kockica">@korisnik.Beleska</textarea>
+                                    <p id="brojac" align="right"></p>
+                                </div>
+                            </div>
+                                <div class="form-group dugmici">
+                                    @{if (korisnik.Id != 0)
+                                        {
+                                            <input class="btn btn-md btn-primary" type="submit" value="Sacuvaj Izmene"
+                                                   id="potvrda" onclick=" return validacijaSubmit()" />
+                                        }
+                                        else
+                                        {
+                                            <input class="btn btn-md btn-primary" type="submit" value="Dodaj korisnika"
+                                                   id="potvrda" onclick=" return validacijaSubmit()" />
+                                        }
+                                        <button class="btn btn-md btn-primary" onclick="window.print()">Stampaj</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    Response.Redirect("/Greska/IsteklaSesija");
+
+                                                }
+                                                finally
+                                                {
+                                                    
+                                                }
+                                            
+                                            }
+
+                                        }

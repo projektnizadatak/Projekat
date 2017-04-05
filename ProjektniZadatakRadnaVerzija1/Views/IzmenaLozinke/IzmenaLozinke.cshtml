@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "IzmenaLozinke";
+    int sifraKorisnika = Convert.ToInt32(Request.Params.Get("id"));
+    string korisnickoIme = Request.Params.Get("korisnickoIme");
+
+}
+
+<h2>IzmenaLozinke</h2>
+
+@using (Html.BeginForm("IzmenaLozinke", "IzmenaLozinke", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td>Korisnicko ime:</td>
+            <td>
+                @korisnickoIme
+                <input type="hidden" name="sifraKorisnika" value="@sifraKorisnika" />
+            </td>
+        </tr>
+        <tr>
+            <td>Nova lozinka:</td>
+            <td><input type="text" name="lozinka" /></td>
+        </tr>
+        <tr>
+            <td>Potvrda lozinke:</td>
+            <td><input type="text" name="potvrda" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="Promeni" /></td>
+        </tr>
+    </table>
+}
+

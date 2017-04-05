@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+
+    @{
+        string porukaLogovanje = "";
+        if (Session["porukaLogovanje"] != null)
+        {
+            porukaLogovanje = (string)Session["porukaLogovanje"];
+        }
+        string porukaIzlogovanje = "";
+        if (Session["porukaIzlogovanje"] != null)
+        {
+            porukaIzlogovanje = (string)Session["porukaIzlogovanje"];
+        }
+
+    }
+
+
+@using (Html.BeginForm("Auautentifikacija", "Logovanje", FormMethod.Post))
+{
+  
+    <div class="container">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+        
+		<form class="form-signin">
+		<div class="mojlog">
+            <h3 class="text-center">@porukaIzlogovanje</h3>
+
+			<div class="inner-addon left-addon">
+			<label class="sr-only"  for="inputUsername">Korisničko ime</label>
+			<i class="glyphicon glyphicon-user"></i>
+			<input class="form-control" id="inputUsername" autofocus="" required="" type="text" placeholder="Korisničko ime" name="korisnickoIme">
+			</div>
+			<br>
+			<div class="inner-addon left-addon">
+			<label class="sr-only" for="inputPassword">Lozinka</label>
+			
+				<i class="glyphicon glyphicon-lock"></i>
+				<input class="form-control" id="inputPassword" required="" type="password" placeholder="Lozinka" name="lozinka">
+			</div>
+            <p>@porukaLogovanje</p>
+
+			<br>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Uloguj se</button>
+      </div>
+	  </form>
+	</div>
+	<div class="col-md-3"></div>
+    </div>
+}
+
+
+
+
+

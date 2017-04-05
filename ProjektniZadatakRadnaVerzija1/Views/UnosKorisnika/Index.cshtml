@@ -1,0 +1,226 @@
+﻿@using ProjektniZadatakRadnaVerzija1.Models
+@using System.Collections.Generic
+@{
+    ViewBag.Title = "Index";
+
+
+    List<Pol> listaPolova = Pol.VratiPolove();
+    List<PravoPristupa> listaPravaPristupa = PravoPristupa.VratiSvaPravaPristupa();
+    List<Grad> listaGradova = Grad.VratiSveGradove();
+    List<TipAdrese> listaTipovaAdresa = TipAdrese.VratiSveTipoveAdresa();
+    List<TipEmailAdrese> listaTipovaEmailAdresa = TipEmailAdrese.VratiSveTipoveEmailAdresa();
+    List<TipTelefona> listaTipovaTelefona = TipTelefona.VratiSveTipoveTelefona();
+    List<LokalMobilni> listaLokalaMobilnih = LokalMobilni.VratiSveMobilneLokale();
+    List<LokalFiksni> listaLokalaFiksnih = LokalFiksni.VratiSveFiksneLokale();
+    int indeksAdrese = 0;
+    int indeksEmailAdrese = 0;
+    int indeksMobilnog = 0;
+    int indeksFiksnog = 0;
+}
+
+@if (listaPravaPristupa!=null && listaPolova!=null)
+{
+
+    using (Html.BeginForm("UnosKorisnikaUBazu", "UnosKorisnika", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+    <table>
+        <tr>
+            <td><input type="file" name="slika" /></td>
+        </tr>
+        <tr> 
+                <td>Pravo pristupa</td>
+                <td>
+                    <select name="pravoPristupa">
+                        @foreach (PravoPristupa p in listaPravaPristupa)
+                    {
+                            <option value="@p.SifraPristupa">@p.NazivPristupa</option>
+                        }
+                    </select>
+                </td>
+        </tr>
+        <tr>
+            <td>Korisnicko ime: </td>
+            <td><input type="text" name="korisnickoIme" /></td>
+        </tr>
+        <tr>
+            <td>Lozinka: </td>
+            <td><input type="password" name="lozinka" /></td>
+        </tr>
+        <tr>
+            <td>Ime: </td>
+            <td><input type="text" name="ime" /></td>
+        </tr>
+        <tr>
+            <td>Prezime: </td>
+            <td><input type="text" name="prezime" /></td>
+        </tr>
+        <tr>
+            <td>Pol</td>
+            <td>
+                @foreach (Pol p in listaPolova)
+                    {
+                    <input type="radio" name="pol" value="@p.SifraPola">@p.NazivPola
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Jmbg: </td>
+            <td><input type="text" name="jmbg" /></td>
+        </tr>
+        <tr>
+            <td>Broj licne karte: </td>
+            <td><input type="text" name="brojLicneKarte" /></td>
+        </tr>
+        <tr>
+            <td>Ime roditelja:</td>
+            <td><input type="text" name="imeRoditelja"/></td>
+        </tr>
+        <tr>
+            <td>Datum rodjenja:</td>
+            <td><input type="date" name="datumRodjenja" /></td>
+        </tr>
+        <tr>
+            <td>Mesto rodjenja:</td>
+            <td>
+                <select name="mestoRodjenja">
+                    <option>Izaberi grad</option>
+                    @foreach (Grad g in listaGradova)
+                    {
+                        <option value="@g.SifraGrada">@g.NazivGrada</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Opstina rodjenja:</td>
+            <td>
+                <select name="opstinaRodjenja">
+                    <option>Izaberi opstinu</option>
+
+                    @foreach (Grad g in listaGradova)
+                    {
+                        List<Opstina> listaOpstina = Opstina.VratiSveOpstine(g.SifraGrada);
+                        <optgroup label="@g.NazivGrada">
+                            @foreach (Opstina o in listaOpstina)
+                            {
+                                <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Adresa boravka:</td>
+            <td>
+                  
+                    
+                    @foreach (TipAdrese ta in listaTipovaAdresa)
+                    {
+                        <input type="checkbox" name="indeksNiza[]" value="@indeksAdrese"/>@ta.NazivTipa
+                        <input type="text" class="hidden" name="sifraTipaAdrese[]" value="@ta.SifraTipa" />
+                        indeksAdrese++;
+                        <input type="text" name="adresa[]" />
+                        <input type="text" name="broj[]" />
+                        
+                        <select name="grad[]">
+                            <option>Izaberi grad</option>
+                            @foreach (Grad g in listaGradova)
+                            {
+                                <option value="@g.SifraGrada">@g.NazivGrada</option>
+                            }
+                        </select>
+
+                        <select name="opstina[]">
+                            <option>Izaberi opstinu</option>
+
+                            @foreach (Grad g in listaGradova)
+                            {
+                                List<Opstina> listaOpstina = Opstina.VratiSveOpstine(g.SifraGrada);
+                                <optgroup label="@g.NazivGrada">
+                                    @foreach (Opstina o in listaOpstina)
+                            {
+                                        <option value="@o.SifraOpstine">@o.NazivOpstine</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                        <br />
+                    }
+            </td>
+        </tr>
+        <tr>
+            <td>Beleska:</td>
+            <td><textarea name="beleska" cols="10"></textarea></td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td>
+
+                @foreach (TipEmailAdrese ta in listaTipovaEmailAdresa)
+                    {
+                    <input type="checkbox" name="indeksNizaEmail[]" value="@indeksEmailAdrese" />@ta.NazivTipa
+                    <input type="text" class="hidden" name="sifraTipaEmailAdrese[]" value="@ta.SifraTipa" />
+                    indeksEmailAdrese++;
+                    <input type="text" name="email[]" />
+                       
+                        
+                        <br />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Mobilni telefon:</td>
+            <td>
+
+
+                @for(int i=0; i<2; i++)
+                    {
+                    <input type="checkbox" name="indeksNizaMobilnog[]" value="@indeksMobilnog" />@listaTipovaTelefona[i].NazivTipa
+                    <input type="text" class="hidden" name="sifraTipaMobilnog[]" value="@listaTipovaTelefona[i].SifraTipa" />
+                    indeksMobilnog++;
+                   
+                         <select name="lokalMobilni[]">
+                            <option>Izaberi lokal</option>
+                            @foreach (LokalMobilni lm in listaLokalaMobilnih )
+                            {
+
+                                <option value="@lm.SifraLokala">@lm.Lokal</option>
+                            }
+                        </select>
+                        <input type="text" name="mobilni[]" />
+                        <br />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Fiksni telefon:</td>
+            <td>
+
+
+                @for (int i = 2; i < 4; i++)
+                {
+                    <input type="checkbox" name="indeksNizaFiksnog[]" value="@indeksFiksnog" />@listaTipovaTelefona[i].NazivTipa
+                    <input type="text" class="hidden" name="sifraTipaFiksnog[]" value="@listaTipovaTelefona[i].SifraTipa" />
+                    indeksFiksnog++;
+
+                         <select name="lokalFiksni[]">
+                            <option>Izaberi lokal</option>
+                            @foreach (LokalFiksni lf in listaLokalaFiksnih)
+                            {
+                                <option value="@lf.SifraLokala">@lf.Lokal</option>
+                            }
+                        </select>
+                        <input type="text" name="fiksni[]" />
+
+                        <br />
+                }
+                </td>
+            </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="Log in" /></td>
+        </tr>
+    </table>
+    }
+}
+
